@@ -89,51 +89,69 @@ Inherited-CardTemplate Scene -> CardBack and CardFront
 
 >If everything went OK, we can now use our new Main scene. Open your project settings and Change Application > Run > Main Scene to `res://src/new_card_game/Main.tcsn`. Run the whole project with F5 to verify
 
-## Step 3: Create a new card type
+>## Step 3: Create a new card type
 
-In this part, we'll create our first new card type which will serve as the baseline for a specific subset of cards.
+>In this part, we'll create our first new card type which will serve as the baseline for a specific subset of cards.
 
-For this demonstration, let's create a "creature" type card.
+>For this demonstration, let's create a "creature" type card.
 
-1. In the Godot Filesystem view, navigate to `res://src/new_card_game/`
-1. Right-click on `CardFront.tcsn` and select "New Inherited Scene". A new tab will open on the top called "[unsaved]". Press "F1" to ensure you're on the 2D view. You should see a grey card. This is the card front baseline coming from the CGF. We're now going to modify that to fit our purposes.
-1. In the Godot Scene tab, double-click on "Front" to rename the scene root. Let's rename it to "CreatureFront" to remind ourselves what this is when working on our scenes. It's not otherwise important.
-1. On the Inspector find and expand custom styles. Then click on the arrow next to StyleBox and select "Make Unique".
-1. Click on the "StyleBox" label, to expand its properties
-1. Click on the "Bg Color". The colour picker will appear. Select a background colour you want to use for your creature cards.
-1. Save the scene as `res://src/new_card_game/cards/Creature.tcsn`
-1. The basic card template has most of the information a creature would need, but what would a creature be without some Health. Let's add this now.
+>1. In the Godot Filesystem view, navigate to `res://src/new_card_game/`
+>1. Right-click on `CardFront.tcsn` and select "New Inherited Scene". A new tab will open on the top called "[unsaved]". Press "F1" to ensure you're on the 2D view. You should see a grey card. This is the card front baseline coming from the CGF. We're now going to modify that to fit our purposes.
+>1. In the Godot Scene tab, double-click on "Front" to rename the scene root. Let's rename it to "CreatureFront" to remind ourselves what this is when working on our scenes. It's not otherwise important.
+>1. On the Inspector find and expand custom styles. Then click on the arrow next to StyleBox and select "Make Unique".
+>1. Click on the "StyleBox" label, to expand its properties
+>1. Click on the "Bg Color". The colour picker will appear. Select a background colour you want to use for your creature cards.
+>1. Save the scene as `res://src/new_card_game/cards/Creature.tcsn`
+>1. The basic card template has most of the information a creature would need, but what would a creature be without some Health. Let's add this now.
 	Right click on HB > Add Child Node > search for "Label" and add it. The new label node will appear under the "Power" node.
-1. Double click it to rename it to "Health". You can add text to see how it looks. If you cannot see it against the background colour, you will need to adjust the font. Let's provide a setup which should work with any background colour now:
-1. With Health selected, in the inspector expand "Custom Fonts". Click on "[empty]" and select "New Dynamic Font".
-1. Under "Font" expand settings. Put "Outline size" to 2 and "Outline color" to black. Check "use filter". White fonts with black outline should be visible against any background.
-1. Click on the "Dynamic Font" dropdown to open its properties. Click on "Font". Click on "[empty]" next to Font Data. Select "load". If you've copied the "fonts" directory into your project, browse into `res://src/fonts` and select xolonium. Otherwise load any other font file you would like.
-1. In the inspector for the "Health" label, find and expand the "rect" properties. Adjust the min_size of y to 13. This defines the maximum amount of vertical space our Health text should take before we start shrinking
-	the label text to compensate
-1. Since we're not creating a completely different front, we can just extend the existing default front script we're using for our game. Right click on the root node (should be called "Front") And select "extend script". A new window will popup will the script name to save. save it as `res://src/new_card_game/cards/CreatureFront.gd`.
-	![Extend Card Script](3.extend_creature_front_script.png)
-1. The new script will open. Add the text to the `_ready()` method as below
-```
-func _ready() -> void:
+>1. Double click it to rename it to "Health". You can add text to see how it looks. If you cannot see it against the background colour, you will need to adjust the font. Let's provide a setup which should work with any background colour now:
+>1. With Health selected, in the inspector expand "Custom Fonts". Click on "[empty]" and select "New Dynamic Font".
+>1. Under "Font" expand settings. Put "Outline size" to 2 and "Outline color" to black. Check "use filter". White fonts with black outline should be visible against any background.
+>1. Click on the "Dynamic Font" dropdown to open its properties. Click on "Font". Click on "[empty]" next to Font Data. Select "load". If you've copied the "fonts" directory into your project, browse into `res://src/fonts` and select xolonium. Otherwise load any other font file you would like.
+>1. In the inspector for the "Health" label, find and expand the "rect" properties. Adjust the min_size of y to 13. This defines the maximum amount of vertical space our Health text should take before we start shrinking
+>	the label text to compensate
+>1. Since we're not creating a completely different front, we can just extend the existing default front script we're using for our game. Right click on the root node (should be called "Front") And select "extend script". A new window will popup will the script name to save. save it as `res://src/new_card_game/cards/CreatureFront.gd`.
+>	![Extend Card Script](3.extend_creature_front_script.png)
+>1. The new script will open. Add the text to the `_ready()` method as below
+>```
+>func _ready() -> void:
+>	card_labels["Health"] = $Margin/CardText/HB/Health
+>```
+>We have now mapped the new label node for our new card type, so that it can be found by our code. 
+>1. Save the Scene as `res://src/new_card_game/cards/CreatureFront.tcsn`
+>1. Right-click on `res://src/new_card_game/CardTemplate.tcsn` and select "New Inherited Scene". A new tab will open on the top called "[unsaved]". 
+>1. In the Godot Scene tab, double-click on "Card" to rename the scene root. Let's rename it to "Creature" to remind ourselves what this is when working on our scenes. It's not otherwise important.
+>1. In the root node inspector, click on the arrow next to Card Front Design > Load, then navigate and select `res://src/new_card_game/cards/CreatureFront.tcsn`
+>1. Press Ctrl+S to save our new scene as `res://src/new_card_game/cards/Creature.tcsn`. We now have our new card type scene template, but our game is not configuration to populate it just yet.
+>
+>
+>14. Open `res://new_card_game/card/CardConfig.gd`. This is where we specify what kind of information each label adds. Since the health of each creature is just a number, we'll add it as a number.
+>15. Edit `PROPERTIES_NUMBERS` and modify the array definition look like this
+>
+>```
+>const PROPERTIES_NUMBERS := ["Cost","Power","Health"]
+>```
+>
+>
+>Now our creature template is ready to use.
+
+(F1 to switch to 2d)
+Okay, so here:
+CardFront Scene > Inherited-CardFront Scene (CreatureFront)
+Inherited-CardFront Scene -> Extended-Script-CardFront (CreatureFront.gd)
+	```
+	func _ready() -> void:
 	card_labels["Health"] = $Margin/CardText/HB/Health
-```
-We have now mapped the new label node for our new card type, so that it can be found by our code. 
-1. Save the Scene as `res://src/new_card_game/cards/CreatureFront.tcsn`
-1. Right-click on `res://src/new_card_game/CardTemplate.tcsn` and select "New Inherited Scene". A new tab will open on the top called "[unsaved]". 
-1. In the Godot Scene tab, double-click on "Card" to rename the scene root. Let's rename it to "Creature" to remind ourselves what this is when working on our scenes. It's not otherwise important.
-1. In the root node inspector, click on the arrow next to Card Front Design > Load, then navigate and select `res://src/new_card_game/cards/CreatureFront.tcsn`
-1. Press Ctrl+S to save our new scene as `res://src/new_card_game/cards/Creature.tcsn`. We now have our new card type scene template, but our game is not configuration to populate it just yet.
+	```
+
+CardTemplate Scene > Inherited-CardTemplate (CreatureTemplate)
+Inherited-CardTemplate Scene -> Inherited-CardFront Scene
+CardConfig.gd -> 
+	```
+	const PROPERTIES_NUMBERS := ["Cost","Power","Health"]
+	```
 
 
-14. Open `res://new_card_game/card/CardConfig.gd`. This is where we specify what kind of information each label adds. Since the health of each creature is just a number, we'll add it as a number.
-15. Edit `PROPERTIES_NUMBERS` and modify the array definition look like this
-
-```
-const PROPERTIES_NUMBERS := ["Cost","Power","Health"]
-```
-
-
-Now our creature template is ready to use.
 
 ## Step 4: Define a new card of the new type.
 
